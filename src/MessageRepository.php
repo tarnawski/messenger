@@ -26,16 +26,14 @@ class MessageRepository implements MessageRepositoryInterface
         $sth->execute();
         $results = $sth->fetchAll();
 
-        return array_map(function (array $result): Message {
-            return Message::createFromArray($result);
-        }, $results);
+        return array_map(fn (array $result) => Message::createFromArray($result), $results);
     }
 
     public function save(Message $message): void
     {
-        $sth = $this->connection->prepare(
-            'INSERT INTO `message` (`identity`, `content`) VALUES (:identity, :content)'
-        );
+        $sth = $this->connection->prepare('
+            INSERT INTO `message` (`identity`, `content`) VALUES (:identity, :content)
+        ');
         $sth->bindValue(':identity', $message->getIdentity());
         $sth->bindValue(':content', $message->getContent());
         $sth->execute();
